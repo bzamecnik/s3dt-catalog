@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SHOP>
+	<SHOPITEM>
+		<NAME>3D tiskárna MakerBot Replicator Z18</NAME>
+		<DESCRIPTION>&lt;p&gt;Print technology: Fused deposition modeling&lt;br /&gt;Rozměry: šxvxh (cm) 49.3x56.5x85.4&lt;br /&gt;Hmotnost (kg): 41&lt;br /&gt;Maximální rozměry tisku (cm): 30.5x30.5x45.7&lt;br /&gt;Connectivity: WI-FI, USB, ETHERNET&lt;br /&gt;win 7+, Mac OS X (10.6+), LINUX (UBUNTU, FEDORA)&lt;br /&gt;Software: MakerBot Desktop (STL, OBJ, THING, MAKERBOT)&lt;br /&gt;Camera: 320x240&lt;br /&gt;Kontrola tisku přes mobilní aplikaci&lt;/p&gt;</DESCRIPTION>
+		<MANUFACTURER>MakerBot</MANUFACTURER>
+		<WARRANTY>24 Měsíc(ů)</WARRANTY>
+		<ITEM_TYPE>product</ITEM_TYPE>
+		<UNIT>ks</UNIT>
+		<IMAGES>
+			<IMAGE>http://www.edsystem.cz/IMGCACHE/_502/502862_0a_3.jpg</IMAGE>
+		</IMAGES>
+		<FLAGS>
+			<ACTION>0</ACTION>
+			<NEW>1</NEW>
+			<TIP>0</TIP>
+		</FLAGS>
+		<CODE>408003</CODE>
+		<PRICE>160601.00</PRICE>
+		<STANDARD_PRICE>160601.00</STANDARD_PRICE>
+		<PURCHASE_PRICE>149288.00</PURCHASE_PRICE>
+		<PRICE_VAT>194327.21</PRICE_VAT>
+		<VAT>21</VAT>
+		<EAN>408003</EAN>
+		<CURRENCY>CZK</CURRENCY>
+		<STOCK>
+			<AMOUNT>100</AMOUNT>
+			<MINIMAL_AMOUNT>0</MINIMAL_AMOUNT>
+		</STOCK>
+		<AVAILABILITY>Externí sklad</AVAILABILITY>
+		<VISIBILITY>hidden</VISIBILITY>
+	</SHOPITEM>
+</SHOP>

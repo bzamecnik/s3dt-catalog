@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResponseProductList>
+  <Status>
+    <StatusCode />
+    <ErrorText />
+  </Status>
+  <ProductList>
+    <Product>
+       <ProId>502862</ProId>
+       <Code>408003</Code>
+       <Name>3D tiskárna MakerBot Replicator Z18</Name>
+       <YourPrice>147776.00</YourPrice>
+       <YourPriceWithFees>149288.00</YourPriceWithFees>
+       <CommodityCode>3DP</CommodityCode>
+       <GarbageFee>12.00</GarbageFee>
+       <AuthorFee>1500.00</AuthorFee>
+       <ValuePack>0.000000</ValuePack>
+       <ValuePackQty>0.000</ValuePackQty>
+       <Warranty>24 Měsíc(ů)</Warranty>
+       <CommodityName>3D TISK</CommodityName>
+       <DealerPrice>160601.00</DealerPrice>
+       <EndUserPrice>160601.00</EndUserPrice>
+       <Vat>21.00</Vat>
+       <PartNumber>MB-REPZ18</PartNumber>
+       <OnStock>true</OnStock>
+       <OnStockText>100+</OnStockText>
+       <Status>Novinka</Status>
+       <ImageUrl>http://www.edsystem.cz/IMGCACHE/_502/502862_0a_3.jpg</ImageUrl>
+       <ProducerName>MakerBot</ProducerName>
+       <RateOfDutyCode>84433210</RateOfDutyCode>
+       <EANCode>408003</EANCode>
+       <Description>&lt;p&gt;Print technology: Fused deposition modeling&lt;br /&gt;Rozměry: šxvxh (cm) 49.3x56.5x85.4&lt;br /&gt;Hmotnost (kg): 41&lt;br /&gt;Maximální rozměry tisku (cm): 30.5x30.5x45.7&lt;br /&gt;Connectivity: WI-FI, USB, ETHERNET&lt;br /&gt;win 7+, Mac OS X (10.6+), LINUX (UBUNTU, FEDORA)&lt;br /&gt;Software: MakerBot Desktop (STL, OBJ, THING, MAKERBOT)&lt;br /&gt;Camera: 320x240&lt;br /&gt;Kontrola tisku přes mobilní aplikaci&lt;/p&gt;</Description>
+     </Product>
+  </ProductList>
+  <AddressId>1055541</AddressId>
+  <Count>66787</Count>
+  <GeneratedDate>2015-01-30T12:55:38.0327916+01:00</GeneratedDate>
+</ResponseProductList>
