@@ -108,6 +108,28 @@ def validate_shoptet_catalog():
     return render_template('validate_shoptet.html',
         file_name=file_name, is_valid=is_valid, exception=exception, log=log)
 
+
+@app.route('/download_shoptet/product_codes/')
+def download_shoptet_existing_products():
+    # url = 'http://localhost:5000/shoptet_catalog.xml'
+    url = 'http://eshop.svet-3d-tisku.cz/export/productsSupplier.xml?visibility=-1&patternId=-4&hash=f1d6cd3ff3530f7b2caf569ee5cdc43346a397dd4baea81e8c5c7fa5d580fe51'
+    catalog_res = requests.get(url, stream=True)    
+    catalog_xml = catalog_res.text
+    
+    codes = []
+    
+    def parse_item(path, item, expected_path=['SHOP', 'SHOPITEM']):
+        if [key for (key, value) in path] == expected_path:
+            codes.append(item['CODE'])
+            return True
+    
+    xmltodict.parse(catalog_xml, item_depth=2, item_callback=parse_item)
+    
+    response = make_response('\n'.join(codes))
+    # TODO: add datetime to the file name
+    response.headers["Content-Disposition"] = "attachment; filename=shoptet_catalog_codes.csv"
+    return response
+
 @app.route('/<file_name>.xml')
 def send_xml_file(file_name):
     """Send your static text file."""
