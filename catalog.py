@@ -55,9 +55,11 @@ def get_generated_date(input_xml):
     l = [line for line in input_xml[-100:].splitlines(True) if 'GeneratedDate' in line][0].strip()
     return re.sub('.*<GeneratedDate>([^<]+)</GeneratedDate>.*', '\\1', l)
 
-def convert_catalog(input_xml):
+def convert_catalog(input_xml, existing_codes):
     shop_items = []
     out_dict = OrderedDict([('SHOP', OrderedDict([('SHOPITEM', shop_items)]))])
+    
+    existing_codes = set(existing_codes)
 
     def handle_shop_item(path, item, expected_path=['ResponseProductList', 'ProductList', 'Product']):
         # also filter products from just a single category
@@ -88,41 +90,58 @@ def convert_catalog(input_xml):
             elif len(eanCode) == 14:
                 eanCode = ean14_to_ean_13(eanCode)
         
-            out_item = OrderedDict([
-                ('NAME', item['Name']),
-                # ('SHORT_DESCRIPTION', ''), # ?
-                ('DESCRIPTION', item['Description']),
-                ('MANUFACTURER', item['ProducerName']),
-                # TODO: extract the number of moths as an integer
-                ('WARRANTY', item['Warranty']),
-                ('ITEM_TYPE', 'product'),
-                ('UNIT', 'ks'),
-                # optional
-                # ('CATEGORIES', OrderedDict([('CATEGORY', item['CommodityName'])])),
-                ('IMAGES', OrderedDict([('IMAGE', item['ImageUrl'])])),
-                ('FLAGS', OrderedDict([
-                    ('ACTION', boolean_to_integer(item['Status'] == 'Doprodej')),
-                    ('NEW', boolean_to_integer(item['Status'] == 'Novinka')),
-                    ('TIP', boolean_to_integer(item['Status'] == 'TOP Produkt')),
-                ])),
-                ('CODE', item['Code']),
-                ('PRICE', item['EndUserPrice']),
-                # end user price in case of some discount
-                ('STANDARD_PRICE', item['EndUserPrice']),
-                ('PURCHASE_PRICE', item['YourPriceWithFees']),
-                ('PRICE_VAT', endUserPriceWithVat),
-                # weight is not given in the input data
-                # ('WEIGHT', '0'), # ?
-                ('VAT', vatPercent),
-                ('EAN', eanCode),
-                ('CURRENCY', 'CZK'), # ?
-                ('STOCK', OrderedDict([
-                    ('AMOUNT', stockItemCount),
-                    ('MINIMAL_AMOUNT', '0'), # ?
-                ])),
-                ('AVAILABILITY', 'Externí sklad' if item['OnStock'] == 'true' else 'Není skladem'),
-                ('VISIBILITY', 'hidden')
-            ])
+            availability = 'Externí sklad' if item['OnStock'] == 'true' else 'Není skladem'
+        
+            existing_item = item['Code'] in existing_codes
+            if existing_item:
+                out_item = OrderedDict([
+                    ('CODE', item['Code']),
+                    ('PRICE', item['EndUserPrice']),
+                    ('STANDARD_PRICE', item['EndUserPrice']),
+                    ('PURCHASE_PRICE', item['YourPriceWithFees']),
+                    ('PRICE_VAT', endUserPriceWithVat),
+                    ('VAT', vatPercent),
+                    ('STOCK', OrderedDict([
+                        ('AMOUNT', stockItemCount),
+                        ('MINIMAL_AMOUNT', '0'), # ?
+                    ])),
+                ])
+            else:
+                out_item = OrderedDict([
+                    ('NAME', item['Name']),
+                    # ('SHORT_DESCRIPTION', ''), # ?
+                    ('DESCRIPTION', item['Description']),
+                    ('MANUFACTURER', item['ProducerName']),
+                    # TODO: extract the number of moths as an integer
+                    ('WARRANTY', item['Warranty']),
+                    ('ITEM_TYPE', 'product'),
+                    ('UNIT', 'ks'),
+                    # optional
+                    # ('CATEGORIES', OrderedDict([('CATEGORY', item['CommodityName'])])),
+                    ('IMAGES', OrderedDict([('IMAGE', item['ImageUrl'])])),
+                    ('FLAGS', OrderedDict([
+                        ('ACTION', boolean_to_integer(item['Status'] == 'Doprodej')),
+                        ('NEW', boolean_to_integer(item['Status'] == 'Novinka')),
+                        ('TIP', boolean_to_integer(item['Status'] == 'TOP Produkt')),
+                    ])),
+                    ('CODE', item['Code']),
+                    ('PRICE', item['EndUserPrice']),
+                    # end user price in case of some discount
+                    ('STANDARD_PRICE', item['EndUserPrice']),
+                    ('PURCHASE_PRICE', item['YourPriceWithFees']),
+                    ('PRICE_VAT', endUserPriceWithVat),
+                    # weight is not given in the input data
+                    # ('WEIGHT', '0'), # ?
+                    ('VAT', vatPercent),
+                    ('EAN', eanCode),
+                    ('CURRENCY', 'CZK'), # ?
+                    ('STOCK', OrderedDict([
+                        ('AMOUNT', stockItemCount),
+                        ('MINIMAL_AMOUNT', '0'), # ?
+                    ])),
+                    ('AVAILABILITY', availability),
+                    ('VISIBILITY', 'hidden')
+                ])
             shop_items.append(out_item)
             # shop_items.append(item) # just filter
         return True

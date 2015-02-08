@@ -94,7 +94,9 @@ def get_ed_catalog_url():
 @app.route('/convert_ed_to_shoptet/', methods=['POST'])
 def convert_catalog():
     ed_catalog = request.files['ed_catalog_file']
-    shoptet_catalog = catalog.convert_catalog(ed_catalog)
+    shoptet_codes_file = request.files['shoptet_codes_file']
+    shoptet_existing_codes = shoptet_codes_file.read().decode().split('\n')
+    shoptet_catalog = catalog.convert_catalog(ed_catalog, shoptet_existing_codes)
     response = make_response(shoptet_catalog)
     # TODO: add datetime to the file name
     response.headers["Content-Disposition"] = "attachment; filename=shoptet_catalog.xml"
