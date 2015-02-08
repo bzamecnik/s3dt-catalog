@@ -1,13 +1,14 @@
 import argparse
 from lxml import etree
 
-def validate_relax_ng(doc_path, schema_path):
+def relax_ng_schema(schema_path):
     relaxng_doc = etree.parse(schema_path)
-    relaxng = etree.RelaxNG(relaxng_doc)
+    return etree.RelaxNG(relaxng_doc)
 
+def validate_relax_ng(doc_path, schema):
     doc = etree.parse(doc_path)
     
-    relaxng.assertValid(doc)
+    schema.assertValid(doc)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -19,9 +20,10 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     
+    schema = relax_ng_schema(args.schema)
     try:
-        validate_relax_ng(args.doc, args.schema)
+        validate_relax_ng(args.doc, schema)
         print('Document is valid.')
     except etree.DocumentInvalid as e:
         print('Document is NOT valid:', e)
-        print(relaxng.error_log)
+        print(schema.error_log)

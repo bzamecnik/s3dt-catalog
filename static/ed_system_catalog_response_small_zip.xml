@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResponseProductListStatus xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.elinkx.cz">
+  <Status>
+    <StatusCode>DONE</StatusCode>
+    <ErrorText />
+  </Status>
+  <ProductListStatus>
+    <url>http://localhost:5000/edsystem_public_catalog_small.zip</url>
+    <fileName>edsystem_public_catalog_small.zip</fileName>
+    <isReady>true</isReady>
+  </ProductListStatus>
+</ResponseProductListStatus>

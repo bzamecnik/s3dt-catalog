@@ -1,0 +1,26 @@
+<h1>S3DT - catalog</h1>
+
+<h2>Download ED System catalog</h2>
+
+Fetch catalog from ED System, filter products just from 3D print category
+and download it to your computer.
+
+<form action="/download_ed/" method="POST">
+	<!-- filter just products we're interested in -->
+	<input type="hidden" name="filter" value="true">
+	<input type="submit" value="Download">
+</form>
+
+<h2>Convert ED System catalog to Shoptet</h2>
+
+<form action="/convert_ed_to_shoptet/" method="POST" enctype="multipart/form-data">
+	ED System catalog XML: <input type="file" name="ed_catalog_file"><br>
+	<input type="submit" value="Convert">
+</form>
+
+<h2>Validate Shoptet catalog</h2>
+
+<form action="/validate_shoptet/" method="POST" enctype="multipart/form-data">
+	Shoptet catalog XML: <input type="file" name="input_file"><br>
+	<input type="submit" value="Validate">
+</form>

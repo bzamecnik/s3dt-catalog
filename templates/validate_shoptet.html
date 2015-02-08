@@ -1,0 +1,12 @@
+<h1>Shoptet catalog validation</h1>
+
+<a href="/">Home</a>
+
+{% if file_name %}
+	<p>file name: {{ file_name }}</p>
+	<p>is valid: {{ is_valid }}</p>
+	{% if not is_valid %}
+	<p>exception: {{ exception }}</p>
+	<p>log: {{ log }}</p>
+	{% endif %}
+{% endif %}

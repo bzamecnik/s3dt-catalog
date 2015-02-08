@@ -1,3 +1,23 @@
+# ----------------------
+# Flask
+# ----------------------
+flask
+
+
+# ----------------------
+# Testing
+# ----------------------
+mock
+
+
+# ----------------------
+# Production Server
+# ----------------------
+#gevent
+gunicorn
+
+# Application
 argparse
 lxml
+requests
 xmltodict
