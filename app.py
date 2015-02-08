@@ -10,6 +10,7 @@ from io import BytesIO
 import os
 from flask import Flask, render_template, request, redirect, url_for, make_response
 from lxml import etree
+import re
 import requests
 import xmltodict
 from zipfile import ZipFile
@@ -108,23 +109,22 @@ def validate_shoptet_catalog():
     return render_template('validate_shoptet.html',
         file_name=file_name, is_valid=is_valid, exception=exception, log=log)
 
-
 @app.route('/download_shoptet/product_codes/')
 def download_shoptet_existing_products():
-    # url = 'http://localhost:5000/shoptet_catalog.xml'
-    url = 'http://eshop.svet-3d-tisku.cz/export/productsSupplier.xml?visibility=-1&patternId=-4&hash=f1d6cd3ff3530f7b2caf569ee5cdc43346a397dd4baea81e8c5c7fa5d580fe51'
-    catalog_res = requests.get(url, stream=True)    
-    catalog_xml = catalog_res.text
+    # example exceptr of the input CSV file:
+    #
+    # code;pairCode;name;
+    # "0001";;"3D tiskarna Profi3DMaker tryska ? 0,5mm / 3D Printer 0,5 mm";
     
-    codes = []
-    
-    def parse_item(path, item, expected_path=['SHOP', 'SHOPITEM']):
-        if [key for (key, value) in path] == expected_path:
-            codes.append(item['CODE'])
-            return True
-    
-    xmltodict.parse(catalog_xml, item_depth=2, item_callback=parse_item)
-    
+    # url = 'http://localhost:5000/shoptet_product_codes.csv'
+    url = 'http://eshop.svet-3d-tisku.cz/export/products.csv?visibility=-1&patternId=2&hash=a2106697936ebe62acc68776868370732a89984fd7f48ac348f0e33cd3837489'
+    catalog_res = requests.get(url, stream=True)
+    codes_csv = catalog_res.content.decode('cp1250')
+
+    lines = codes_csv.split('\r\n')
+
+    codes = sorted(set(re.sub('^"([^"]+)".*', '\\1', line) for line in lines if line.startswith('"')))
+
     response = make_response('\n'.join(codes))
     # TODO: add datetime to the file name
     response.headers["Content-Disposition"] = "attachment; filename=shoptet_catalog_codes.csv"
@@ -142,6 +142,12 @@ def send_zip_file(file_name):
     file_dot_text = file_name + '.zip'
     return app.send_static_file(file_dot_text)
 
+
+@app.route('/<file_name>.csv')
+def send_csv_file(file_name):
+    """Send your static text file."""
+    file_dot_text = file_name + '.csv'
+    return app.send_static_file(file_dot_text)
 
 @app.errorhandler(404)
 def page_not_found(error):
