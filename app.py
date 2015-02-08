@@ -24,9 +24,14 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY',
     'this should be set via an ENV variable')
 app.config['ED_CONFIG'] = {
-    'catalog_request_url': 'http://localhost:5000/ed_system_catalog_response_small_zip.xml',
+    # 'catalog_request_url': 'http://localhost:5000/ed_system_catalog_response_zip.xml',
+    'catalog_request_url': 'http://public.ws.cz.elinkx.biz/service.asmx/getProductListDownloadZIP',
     'login': os.environ.get('ED_LOGIN'),
     'password': os.environ.get('ED_PASSWORD')}
+app.config['SHOPTET_CONFIG'] = {
+     # 'existing_products_url': 'http://localhost:5000/shoptet_product_codes.csv',
+    'existing_products_url': 'http://eshop.svet-3d-tisku.cz/export/products.csv?visibility=-1&patternId=2&hash=a2106697936ebe62acc68776868370732a89984fd7f48ac348f0e33cd3837489',
+}
 
 ###
 # Routing for your application.
@@ -52,7 +57,7 @@ def download_ed_catalog():
 #   </ProductListStatus>
 # </ResponseProductListStatus>'''
     catalog_url = get_ed_catalog_url()
-    catalog_res = requests.get(catalog_url)
+    catalog_res = requests.get(catalog_url, stream=True)
     
     if not catalog_url.endswith('.zip'):
         catalog_xml = catalog_res.text
@@ -116,8 +121,7 @@ def download_shoptet_existing_products():
     # code;pairCode;name;
     # "0001";;"3D tiskarna Profi3DMaker tryska ? 0,5mm / 3D Printer 0,5 mm";
     
-    # url = 'http://localhost:5000/shoptet_product_codes.csv'
-    url = 'http://eshop.svet-3d-tisku.cz/export/products.csv?visibility=-1&patternId=2&hash=a2106697936ebe62acc68776868370732a89984fd7f48ac348f0e33cd3837489'
+    url = app.config['SHOPTET_CONFIG']['existing_products_url']
     catalog_res = requests.get(url, stream=True)
     codes_csv = catalog_res.content.decode('cp1250')
 
