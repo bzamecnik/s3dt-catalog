@@ -34,6 +34,27 @@ def ean13_checksum(code):
 def ean14_to_ean_13(code):
     return ean13_checksum(code[1:-1])
 
+def filter_catalog(input_xml):
+    products = []
+    out_dict = OrderedDict([('ResponseProductList', OrderedDict([('ProductList', products)]))])
+    def handle_product(path, item, expected_path=['ResponseProductList', 'ProductList', 'Product']):
+        # filter products from just a single category
+        if [key for (key, value) in path] == expected_path and \
+            (item['CommodityName'] == '3D TISK' or item['CommodityCode'] == '3DP'):
+            products.append(OrderedDict([('Product', item)]))
+        return True
+    
+    xmltodict.parse(input_xml, item_depth=3, item_callback=handle_product)
+    
+    out_dict['ResponseProductList']['GeneratedDate'] = get_generated_date(input_xml)
+    
+    output_xml = xmltodict.unparse(out_dict, pretty=True)
+    return output_xml    
+
+def get_generated_date(input_xml):
+    l = [line for line in input_xml[-100:].splitlines(True) if 'GeneratedDate' in line][0].strip()
+    return re.sub('.*<GeneratedDate>([^<]+)</GeneratedDate>.*', '\\1', l)
+
 def convert_catalog(input_xml):
     shop_items = []
     out_dict = OrderedDict([('SHOP', OrderedDict([('SHOPITEM', shop_items)]))])
