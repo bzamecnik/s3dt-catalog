@@ -101,7 +101,8 @@ def convert_catalog(input_xml, existing_codes):
             elif len(eanCode) == 14:
                 eanCode = ean14_to_ean_13(eanCode)
         
-            availability = 'Externí sklad' if item['OnStock'] == 'true' else 'Není skladem'
+            # default value is 'Skladem' - to allow filtering items on stock
+            availability = '' if item['OnStock'] == 'true' else 'Není skladem'
         
             existing_item = item['Code'] in existing_codes
             if existing_item:
