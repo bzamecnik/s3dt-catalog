@@ -77,6 +77,11 @@ def convert_catalog(input_xml, existing_codes):
             vatPercent = Decimal(item['Vat']).quantize(Decimal('1'), rounding=ROUND_HALF_UP)
             vat = Decimal('0.01') * vatPercent
             endUserPriceWithVat = add_vat(endUserPrice, vat)
+
+            # purchase price without VAT
+            purchasePrice = Decimal(item['YourPriceWithFees'])
+            purchasePriceWithVat = add_vat(purchasePrice, vat)
+            
             # Elinkx quantizes some stock amounts to ranges, eg. '10-49',
             # '50-99', '100+', also exact quantities are decimal, eg. '12,00'.
             # However, Shoptet only accepts exact integer amounts.
@@ -102,10 +107,12 @@ def convert_catalog(input_xml, existing_codes):
             if existing_item:
                 out_item = OrderedDict([
                     ('CODE', item['Code']),
-                    ('PRICE', item['EndUserPrice']),
-                    ('STANDARD_PRICE', item['EndUserPrice']),
-                    ('PURCHASE_PRICE', item['YourPriceWithFees']),
-                    ('PRICE_VAT', endUserPriceWithVat),
+                    # price might be updated by hand and should not be overwritten
+                    # ('PRICE', item['EndUserPrice']),
+                    # ('STANDARD_PRICE', item['EndUserPrice']),
+                    ('PURCHASE_PRICE', purchasePriceWithVat),
+                    # the end-user price will be updated by hand, not overwritten
+                    #('PRICE_VAT', endUserPriceWithVat),
                     ('VAT', vatPercent),
                     ('STOCK', OrderedDict([
                         ('AMOUNT', stockItemCount),
@@ -133,8 +140,8 @@ def convert_catalog(input_xml, existing_codes):
                     ('CODE', item['Code']),
                     ('PRICE', item['EndUserPrice']),
                     # end user price in case of some discount
-                    ('STANDARD_PRICE', item['EndUserPrice']),
-                    ('PURCHASE_PRICE', item['YourPriceWithFees']),
+                    ('STANDARD_PRICE', endUserPriceWithVat),
+                    ('PURCHASE_PRICE', purchasePriceWithVat),
                     ('PRICE_VAT', endUserPriceWithVat),
                     # weight is not given in the input data
                     # ('WEIGHT', '0'), # ?
