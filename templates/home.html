@@ -11,12 +11,12 @@ and download it to your computer.
 	<input type="submit" value="Download">
 </form>
 
-<h2>Download Shoptet catalog codes</h2>
+<h2>Download Shoptet catalog</h2>
 
-Fetch catalog from Shoptet, extract codes of existing products
-and download them as a CSV file to your computer.
+Fetch catalog from Shoptet, extract codes of existing products along with their
+visibility and download them as a CSV file to your computer.
 
-<form action="/download_shoptet/product_codes/">
+<form action="/download_shoptet/existing_catalog/">
 	<input type="submit" value="Download">
 </form>
 
@@ -25,7 +25,7 @@ and download them as a CSV file to your computer.
 <form action="/convert_ed_to_shoptet/" method="POST" enctype="multipart/form-data">
 	ED System catalog XML: <input type="file" name="ed_catalog_file"><br>
 	<p>Optionally update just price and availability for existing products:</p>
-	Shoptet product codes CSV: <input type="file" name="shoptet_codes_file"><br>
+	Shoptet catalog CSV: <input type="file" name="shoptet_catalog_file"><br>
 	<input type="submit" value="Convert">
 </form>
 

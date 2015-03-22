@@ -6,10 +6,12 @@ Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
 This file creates your application.
 """
 
-from io import BytesIO
-import os
+import csv
 from flask import Flask, render_template, request, redirect, url_for, make_response
+from io import BytesIO, StringIO
 from lxml import etree
+import os
+import pandas as pd
 import re
 import requests
 import xmltodict
@@ -93,13 +95,23 @@ def get_ed_catalog_url():
 
 @app.route('/convert_ed_to_shoptet/', methods=['POST'])
 def convert_catalog():
+    # required
     ed_catalog = request.files['ed_catalog_file']
-    shoptet_codes_file = request.files['shoptet_codes_file']
-    shoptet_existing_codes = shoptet_codes_file.read().decode().split('\n')
-    shoptet_catalog = catalog.convert_catalog(ed_catalog, shoptet_existing_codes)
+    # optional - if not given all products are treated as new
+    shoptet_catalog_file = request.files['shoptet_catalog_file']
+    shoptet_existing_items = shoptet_catalog_file.read().decode()
+    
+    if len(shoptet_existing_items) > 0:
+        df = pd.read_csv(StringIO(shoptet_existing_items),
+            dtype={'product_code': str, 'visible': bool})
+        df.set_index('product_code', inplace=True)
+    else:
+        df = pd.DataFrame()
+    
+    shoptet_catalog = catalog.convert_catalog(ed_catalog, df)
     response = make_response(shoptet_catalog)
     # TODO: add datetime to the file name
-    response.headers["Content-Disposition"] = "attachment; filename=shoptet_catalog.xml"
+    response.headers["Content-Disposition"] = "attachment; filename=shoptet_catalog_import.xml"
     return response
 
 @app.route('/validate_shoptet/', methods=['POST'])
@@ -116,24 +128,39 @@ def validate_shoptet_catalog():
     return render_template('validate_shoptet.html',
         file_name=file_name, is_valid=is_valid, exception=exception, log=log)
 
-@app.route('/download_shoptet/product_codes/')
+@app.route('/download_shoptet/existing_catalog/')
 def download_shoptet_existing_products():
-    # example exceptr of the input CSV file:
+    '''
+    Converts one CSV file to another.
+    '''
+    # example excerpt of the input CSV file (cp1250, CR-LF, quotes):
     #
-    # code;pairCode;name;
-    # "0001";;"3D tiskarna Profi3DMaker tryska ? 0,5mm / 3D Printer 0,5 mm";
+    # code;pairCode;name;productVisibility;
+    # "0001";;"3D tiskarna Profi3DMaker tryska ? 0,5mm / 3D Printer 0,5 mm";"visible";
+    #
+    # example output CSV (UTF-8, LF, no-quotes):
+    # product_code,visible
+    # 0001,true
     
     url = app.config['SHOPTET_CONFIG']['existing_products_url']
     catalog_res = requests.get(url, stream=True)
     codes_csv = catalog_res.content.decode('cp1250')
-
     lines = codes_csv.split('\r\n')
+    
+    existing_products = StringIO()
+    csvwriter = csv.writer(existing_products)
+    csvwriter.writerow(['product_code', 'visible'])
 
-    codes = sorted(set(re.sub('^"([^"]+)".*', '\\1', line) for line in lines if line.startswith('"')))
+    # input columns: code;pairCode;name;productVisibility;
+    # output columns: product_code,visible
+    for row in csv.reader(lines[1:], delimiter=';'):
+        # product id, visibility
+        if len(row) >= 3:
+            csvwriter.writerow([row[0], str(row[3] == 'visible').lower()])
 
-    response = make_response('\n'.join(codes))
+    response = make_response(existing_products.getvalue())
     # TODO: add datetime to the file name
-    response.headers["Content-Disposition"] = "attachment; filename=shoptet_catalog_codes.csv"
+    response.headers["Content-Disposition"] = "attachment; filename=shoptet_existing_catalog.csv"
     return response
 
 @app.route('/<file_name>.xml')

@@ -55,11 +55,9 @@ def get_generated_date(input_xml):
     l = [line for line in input_xml[-100:].splitlines(True) if 'GeneratedDate' in line][0].strip()
     return re.sub('.*<GeneratedDate>([^<]+)</GeneratedDate>.*', '\\1', l)
 
-def convert_catalog(input_xml, existing_codes):
+def convert_catalog(input_xml, existing_items):
     shop_items = []
     out_dict = OrderedDict([('SHOP', OrderedDict([('SHOPITEM', shop_items)]))])
-    
-    existing_codes = set(existing_codes)
 
     def round_price(price):
         'Round price to 2 decimal places'
@@ -104,8 +102,13 @@ def convert_catalog(input_xml, existing_codes):
             # default value is 'Skladem' - to allow filtering items on stock
             availability = '' if item['OnStock'] == 'true' else 'Není skladem'
         
-            existing_item = item['Code'] in existing_codes
-            if existing_item:
+            item_code = item['Code']
+            is_item_existent = item_code in existing_items.index
+            existing_item = existing_items.loc[item_code] if is_item_existent else None
+            visible = existing_item['visible'] if is_item_existent else False
+            visibility = 'visible' if visible else 'hidden'
+            
+            if is_item_existent:
                 out_item = OrderedDict([
                     ('CODE', item['Code']),
                     # price might be updated by hand and should not be overwritten
@@ -119,6 +122,7 @@ def convert_catalog(input_xml, existing_codes):
                         ('AMOUNT', stockItemCount),
                         ('MINIMAL_AMOUNT', '0'), # ?
                     ])),
+                    ('VISIBILITY', visibility)
                 ])
             else:
                 out_item = OrderedDict([
@@ -154,7 +158,7 @@ def convert_catalog(input_xml, existing_codes):
                         ('MINIMAL_AMOUNT', '0'), # ?
                     ])),
                     ('AVAILABILITY', availability),
-                    ('VISIBILITY', 'hidden')
+                    ('VISIBILITY', visibility)
                 ])
             shop_items.append(out_item)
             # shop_items.append(item) # just filter
