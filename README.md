@@ -16,3 +16,9 @@ a Czech-based e-shop dedicated to 3D printing equipment.
 ## About
 - Author: [Bohumír Zámečník](http://bohumirzamecnik.cz) ([@bzamecnik](https://twitter.com/bzamecnik/))
 - License: MIT
+
+## Running locally
+
+	export ED_LOGIN='...'
+	export ED_PASSWORD='...'
+	python app.py
