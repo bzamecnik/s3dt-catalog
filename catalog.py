@@ -61,6 +61,13 @@ def convert_catalog(input_xml, existing_codes):
     
     existing_codes = set(existing_codes)
 
+    def round_price(price):
+        'Round price to 2 decimal places'
+        return price.quantize(Decimal('.01'), rounding=ROUND_HALF_UP)
+
+    def add_vat(price, vat):
+        return round_price(price * (Decimal('1') + vat))
+
     def handle_shop_item(path, item, expected_path=['ResponseProductList', 'ProductList', 'Product']):
         # also filter products from just a single category
         if [key for (key, value) in path] == expected_path and \
@@ -68,9 +75,8 @@ def convert_catalog(input_xml, existing_codes):
             
             endUserPrice = Decimal(item['EndUserPrice'])
             vatPercent = Decimal(item['Vat']).quantize(Decimal('1'), rounding=ROUND_HALF_UP)
-            endUserPriceWithVat = (endUserPrice * (Decimal('1') + Decimal('0.01') * vatPercent)) \
-                .quantize(Decimal('.01'), rounding=ROUND_HALF_UP)
-                
+            vat = Decimal('0.01') * vatPercent
+            endUserPriceWithVat = add_vat(endUserPrice, vat)
             # Elinkx quantizes some stock amounts to ranges, eg. '10-49',
             # '50-99', '100+', also exact quantities are decimal, eg. '12,00'.
             # However, Shoptet only accepts exact integer amounts.
