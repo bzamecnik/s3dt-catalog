@@ -18,7 +18,6 @@ gunicorn
 
 # Application
 argparse
-csv
 lxml
 pandas
 requests
