@@ -46,7 +46,9 @@ def filter_catalog(input_xml):
     
     xmltodict.parse(input_xml, item_depth=3, item_callback=handle_product)
     
-    out_dict['ResponseProductList']['GeneratedDate'] = get_generated_date(input_xml)
+    # since the input_xml is a file-like that might not be seekable
+    # we cannot easily read the following:
+    #out_dict['ResponseProductList']['GeneratedDate'] = get_generated_date(input_xml)
     
     output_xml = xmltodict.unparse(out_dict, pretty=True)
     return output_xml    

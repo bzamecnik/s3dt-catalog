@@ -14,6 +14,7 @@ import os
 import pandas as pd
 import re
 import requests
+from werkzeug.contrib.iterio import IterIO
 import xmltodict
 from zipfile import ZipFile
 
@@ -61,13 +62,15 @@ def download_ed_catalog():
     catalog_url = get_ed_catalog_url()
     catalog_res = requests.get(catalog_url, stream=True)
     
+    # Read the request content, zip file and XML file via a stream to prevent
+    # reading the whole data into memory at once. The memory used should be
+    # constant regardless of the size of the input data.
     if not catalog_url.endswith('.zip'):
-        catalog_xml = catalog_res.text
+        catalog_xml = IterIO(catalog_res.iter_lines)
     else:
-        zf = ZipFile(BytesIO(catalog_res.content))
-        xml_file = zf.open(zf.filelist[0].filename, 'r')
-        # TODO: try to process the catalog in the streaming mode
-        catalog_xml = xml_file.read().decode()
+        with ZipFile(IterIO(catalog_res.iter_content(chunk_size=4096), sentinel=b'')) as zf:
+            with zf.open(zf.filelist[0].filename, 'r') as xml_file:
+                catalog_xml = xml_file
     
     filter_enabled = request.form['filter'] == 'true'
     filtered_catalog = catalog.filter_catalog(catalog_xml) \
