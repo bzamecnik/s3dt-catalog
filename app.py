@@ -7,7 +7,7 @@ This file creates your application.
 """
 
 import csv
-from flask import Flask, render_template, request, redirect, url_for, make_response
+from flask import Flask, render_template, request, redirect, make_response
 from io import BytesIO, StringIO
 from lxml import etree
 import os
@@ -15,6 +15,8 @@ import pandas as pd
 import re
 import requests
 from werkzeug.contrib.iterio import IterIO
+from werkzeug.datastructures import Headers
+from werkzeug.wsgi import wrap_file
 import xmltodict
 from zipfile import ZipFile
 
@@ -77,10 +79,13 @@ def download_ed_catalog():
         if filter_enabled \
         else catalog_xml
 
-    response = make_response(filtered_catalog)
     # TODO: add datetime to the file name
-    response.headers["Content-Disposition"] = "attachment; filename=ed_catalog.xml"
-    return response
+    headers = Headers()
+    headers.add("Content-Disposition", "attachment; filename=ed_catalog.xml")
+    # allow the output file to be streamed
+    return Response(wrap_file(environ, filtered_catalog),
+        direct_passthrough=True,
+        headers=headers)
 
 def get_ed_catalog_url():
     ed_config = app.config['ED_CONFIG']
