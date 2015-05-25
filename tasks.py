@@ -5,7 +5,7 @@ import worker
 import time
 
 from ed_catalog import get_ed_catalog_url, download_ed_catalog_to_mongo, Counter
-from shoptet_catalog import download_ed_catalog_to_mongo
+from shoptet_catalog import download_shoptet_catalog_to_mongo
 
 # localhost if not defined
 mongo_uri = os.environ.get('MONGOLAB_URI')
@@ -35,7 +35,7 @@ def update_shoptet_catalog():
         job = get_current_job()
 
         catalog_url = os.environ.get('SHOPTET_CATALOG_URI')
-        item_count = download_ed_catalog_to_mongo(mongo_uri, catalog_url)
+        item_count = download_shoptet_catalog_to_mongo(mongo_uri, catalog_url)
         
         end = time.time()
         job.meta['elapsed_time'] = '%.3f sec' % (end - start)
