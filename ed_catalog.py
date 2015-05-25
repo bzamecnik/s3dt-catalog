@@ -175,7 +175,7 @@ def ean14_to_ean_13(code):
 
 def download_ed_catalog_to_mongo(mongo_uri, catalog_url, counter):
     mongo = MongoClient(mongo_uri)
-    db = mongo.s3dt_catalog
+    db = mongo.get_default_database()
     item_collection = db.items
     item_collection.create_index('code')
     
