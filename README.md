@@ -8,10 +8,8 @@ It is suited specifically for [Svět 3D tisku](http://eshop.svet-3d-tisku.cz) (3
 a Czech-based e-shop dedicated to 3D printing equipment.
 
 ## Requirements
-- Python 3
-- lxml
-- xmltodict
-- argparse
+
+See the `requirements.txt` file.
 
 ## About
 - Author: [Bohumír Zámečník](http://bohumirzamecnik.cz) ([@bzamecnik](https://twitter.com/bzamecnik/))
