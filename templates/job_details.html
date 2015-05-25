@@ -1,0 +1,12 @@
+<h1>Job</h1>
+{% if job %}
+<pre>
+id: {{job.id}}
+status: {{job.status}}
+progress: {{ job.meta.progress }}
+result: {{job.result}}
+metadata: {{ job.meta }}
+</pre>
+{% else %}
+No such job found.
+{% endif %}

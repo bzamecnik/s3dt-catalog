@@ -1,37 +1,28 @@
 <h1>S3DT - catalog</h1>
 
-<h2>Download ED System catalog</h2>
+<h2>Update catalog from ED System</h2>
 
-Fetch catalog from ED System, filter products just from 3D print category
-and download it to your computer.
+<p>Download catalog from ED System, filter products just from 3D print category,
+convert them to the Shoptet format and store them into MongoDB.</p>
 
-<form action="/download_ed/" method="POST">
-	<!-- filter just products we're interested in -->
-	<input type="hidden" name="filter" value="true">
-	<input type="submit" value="Download">
-</form>
+<a href="/update_ed_catalog/">Update catalog from ED System</a>
 
-<h2>Download Shoptet catalog</h2>
+<h2>Update catalog from Shoptet</h2>
 
-Fetch catalog from Shoptet, extract codes of existing products along with their
-visibility and download them as a CSV file to your computer.
+<p>Download catalog from Shoptet, extract codes of existing products along with their
+visibility and store them to MongoDB.</p>
 
-<form action="/download_shoptet/existing_catalog/">
-	<input type="submit" value="Download">
-</form>
+<a href="/update_shoptet_catalog/">Update catalog from Shoptet</a>
 
-<h2>Convert ED System catalog to Shoptet</h2>
+<h2>Export catalog to Shoptet</h2>
 
-<form action="/convert_ed_to_shoptet/" method="POST" enctype="multipart/form-data">
-	ED System catalog XML: <input type="file" name="ed_catalog_file"><br>
-	<p>Optionally update just price and availability for existing products:</p>
-	Shoptet catalog CSV: <input type="file" name="shoptet_catalog_file"><br>
-	<input type="submit" value="Convert">
-</form>
+<p>Download updated catalog as an XML file than can be imported to Shoptet.</p>
 
-<h2>Validate Shoptet catalog</h2>
+<a href="/export_catalog/">Export catalog to Shoptet</a> (download an XML)
 
-<form action="/validate_shoptet/" method="POST" enctype="multipart/form-data">
-	Shoptet catalog XML: <input type="file" name="input_file"><br>
-	<input type="submit" value="Validate">
-</form>
+<h2>Jobs</h2>
+
+<ul>
+	<li><a href="/jobs/">Summary of background jobs</a></li>
+	<li><a href="/rq/">Redis Queue dashboard - background job details</a></li>
+</ul>

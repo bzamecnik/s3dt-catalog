@@ -1,0 +1,20 @@
+<h1>Jobs</h1>
+
+{% for state in jobs %}
+<h2>{{state}}</h2>
+<ul>
+	{% for job in jobs[state] %}
+	<li>
+		<a href='/jobs/{{job.id}}'>{{job.id}}</a>
+		[<a href='/jobs/{{job.id}}/cancel'>cancel</a>]
+		<ul>
+		{% for key in job.meta %}
+			<li>{{ key }}: {{ job.meta[key] }}</li>
+		{% endfor %}
+		</ul>
+		{% if state not in ('Failed', 'Finished') %}
+		{% endif %}
+	</li>
+	{% endfor %}
+</ul>
+{% endfor %}

@@ -56,4 +56,10 @@ target/
 
 # Custom rules
 /data/
+/docs/
 /pyvenv/
+/static/
+/_*/
+.env/
+
+/run.sh
