@@ -12,7 +12,7 @@ mongo_uri = os.environ.get('MONGOLAB_URI')
 
 def update_ed_catalog():
     job = get_current_job()
-    def update_job_progress(state):
+    def set_job_progress(state):
         job.meta['progress'] = 'obtaining link to the catalog XML'
         job.save()
     
