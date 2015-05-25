@@ -4,7 +4,7 @@ import requests
 
 def download_ed_catalog_to_mongo(mongo_uri, catalog_url):
     mongo = MongoClient(mongo_uri)
-    db = mongo.s3dt_catalog
+    db = mongo.get_default_database()
     item_collection = db.items
     item_collection.create_index("code")
     
