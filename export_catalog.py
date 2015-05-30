@@ -43,7 +43,7 @@ def convert_item(item):
             #('PRICE_VAT', converted_item['PRICE_VAT']),
             ('VAT', converted_item['VAT']),
             ('STOCK', converted_item['STOCK']),
-            ('AVAILABILITY_IN_STOCK', converted_item['AVAILABILITY']),
+            ('AVAILABILITY_IN_STOCK', converted_item['AVAILABILITY_IN_STOCK']),
             ('VISIBILITY', visibility)
         ])
     else:
@@ -65,7 +65,7 @@ def convert_item(item):
             ('EAN', converted_item['EAN']),
             ('CURRENCY', converted_item['CURRENCY']),
             ('STOCK', converted_item['STOCK']),
-            ('AVAILABILITY_IN_STOCK', converted_item['AVAILABILITY']),
+            ('AVAILABILITY_IN_STOCK', converted_item['AVAILABILITY_IN_STOCK']),
             ('AVAILABILITY_OUT_STOCK', '14 dní'),
             ('VISIBILITY', visibility)
         ])

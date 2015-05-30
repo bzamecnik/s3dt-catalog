@@ -142,8 +142,7 @@ def convert_item(item):
             ('AMOUNT', stockItemCount),
             ('MINIMAL_AMOUNT', '0'), # ?
         ])),
-        # default value is 'Skladem' - to allow filtering items on stock
-        ('AVAILABILITY', '' if item['OnStock'] == 'true' else 'Není skladem')
+        ('AVAILABILITY_IN_STOCK', 'Skladem' if item['OnStock'] == 'true' else 'Není skladem')
     ])
     return out_item
     
