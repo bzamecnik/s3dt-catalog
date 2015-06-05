@@ -66,7 +66,7 @@ def convert_item(item):
             ('CURRENCY', converted_item['CURRENCY']),
             ('STOCK', converted_item['STOCK']),
             ('AVAILABILITY_IN_STOCK', converted_item['AVAILABILITY_IN_STOCK']),
-            ('AVAILABILITY_OUT_STOCK', '14 dní'),
+            ('AVAILABILITY_OUT_OF_STOCK', '14 dní'),
             ('VISIBILITY', visibility)
         ])
     return out_item
