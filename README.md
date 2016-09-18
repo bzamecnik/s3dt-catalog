@@ -25,3 +25,20 @@ Run:
 honcho start
 ```
 
+## Running as a Debian sysvinit service
+
+### Installing
+
+- put the repo to `/opt/s3dt_catalog`
+- copy `init.d/s3dt_catalog` to `/etc/init.d/s3dt_catalog`
+- `sudo useradd -r -s /bin/false s3dt_catalog`
+- `mkdir /var/log`
+- `chown -R s3dt_catalog:s3dt_catalog /opt/s3dt_catalog`
+
+
+```
+sudo service s3dt_catalog start
+sudo service s3dt_catalog stop
+sudo service s3dt_catalog restart
+sudo service s3dt_catalog status
+```
