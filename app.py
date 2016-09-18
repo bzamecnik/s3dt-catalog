@@ -33,21 +33,21 @@ def home():
     """Render website's home page."""
     return render_template('home.html')
 
-@app.route('/update_ed_catalog/')
+@app.route('/catalog/ed', methods=['POST'])
 def update_ed_catalog():
     with Connection(redis_client):
         q = Queue()
         result = q.enqueue(tasks.update_ed_catalog)
         return redirect(url_for('jobs'))
 
-@app.route('/update_shoptet_catalog/')
+@app.route('/catalog/shoptet', methods=['POST'])
 def update_shoptet_catalog():
     with Connection(redis_client):
         q = Queue()
         result = q.enqueue(tasks.update_shoptet_catalog)
         return redirect(url_for('jobs'))
 
-@app.route('/export_catalog/')
+@app.route('/catalog')
 def export_catalog():
     catalog_xml = export_catalog_xml()
     response = make_response(catalog_xml)

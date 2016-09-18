@@ -5,20 +5,26 @@
 <p>Download catalog from ED System, filter products just from 3D print category,
 convert them to the Shoptet format and store them into MongoDB.</p>
 
-<a href="/update_ed_catalog/">Update catalog from ED System</a>
+<form action="/catalog/ed" method="POST">
+	<input type="submit" value="Update catalog from ED System">
+</form>
 
 <h2>Update catalog from Shoptet</h2>
 
 <p>Download catalog from Shoptet, extract codes of existing products along with their
 visibility and store them to MongoDB.</p>
 
-<a href="/update_shoptet_catalog/">Update catalog from Shoptet</a>
+<form action="/catalog/shoptet" method="POST">
+	<input type="submit" value="Update catalog from Shoptet">
+</form>
 
 <h2>Export catalog to Shoptet</h2>
 
 <p>Download updated catalog as an XML file than can be imported to Shoptet.</p>
 
-<a href="/export_catalog/">Export catalog to Shoptet</a> (download an XML)
+<form action="/catalog" method="GET">
+	<input type="submit" value="Export catalog to Shoptet"> (download an XML)
+</form>
 
 <h2>Jobs</h2>
 
