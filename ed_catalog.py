@@ -205,7 +205,7 @@ if __name__ == '__main__':
         # catalog_url = get_ed_catalog_url(catalog_request_url)
         catalog_url = 'http://localhost:5000/static/priceList_1055541_UTF8_63e3bbe9-ab87-49bf-a221-b20590b106de.zip'
         return catalog_url
-    mongo_uri = os.environ.get('MONGOLAB_URI') # localhost if not defined
+    mongo_uri = os.environ.get('MONGO_URI') # localhost if not defined
     def counter_report(counter):
         print('total:', counter.total, ', selected:', counter.selected)
     counter = Counter(report=counter_report, report_period=1000)

@@ -72,7 +72,7 @@ def convert_item(item):
     return out_item
 
 def export_catalog_xml():
-    mongo_uri = os.environ.get('MONGOLAB_URI')
+    mongo_uri = os.environ.get('MONGO_URI')
     mongo = MongoClient(mongo_uri)
     db = mongo.get_default_database()
     item_collection = db.items

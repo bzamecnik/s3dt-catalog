@@ -8,7 +8,7 @@ from ed_catalog import get_ed_catalog_url, download_ed_catalog_to_mongo, Counter
 from shoptet_catalog import download_shoptet_catalog_to_mongo
 
 # localhost if not defined
-mongo_uri = os.environ.get('MONGOLAB_URI')
+mongo_uri = os.environ.get('MONGO_URI')
 
 def update_ed_catalog():
     job = get_current_job()
