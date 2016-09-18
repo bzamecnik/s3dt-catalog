@@ -54,6 +54,7 @@ def export_catalog():
     date = arrow.get().format('YYYY-MM-DD_HH-mm-ss')
     file_name = 'shoptet_catalog_import_%s.xml' % date
     response.headers["Content-Disposition"] = "attachment; filename=%s" % file_name
+    response.headers["Content-Type"] = "text/xml; charset=utf-8"
     return response
 
 @app.route('/jobs/<job_id>')
