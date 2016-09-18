@@ -17,6 +17,11 @@ See the `requirements.txt` file.
 
 ## Running locally
 
-	export ED_LOGIN='...'
-	export ED_PASSWORD='...'
-	python app.py
+Edit `.env` to fill in the configuration (copy from `.env.example`).
+
+Run:
+
+```
+honcho start
+```
+

@@ -60,6 +60,5 @@ target/
 /pyvenv/
 /static/
 /_*/
-.env/
 
-/run.sh
+.env
