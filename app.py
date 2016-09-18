@@ -16,7 +16,6 @@ from rq_dashboard import RQDashboard
 import worker
 
 from export_catalog import export_catalog_xml
-import heroku_worker
 import tasks
 
 app = Flask(__name__)
@@ -86,21 +85,6 @@ def jobs():
             ('Finished', FinishedJobRegistry()),
             ('Failed', Queue('failed'))]])
         return render_template('jobs.html', jobs=jobs)
-
-@app.route('/heroku_worker/')
-def heroku_worker_info():
-    running = heroku_worker.worker_running()
-    return render_template('heroku_worker.html', running=running)
-
-@app.route('/heroku_worker/start/')
-def start_heroku_worker():
-    heroku_worker.start_worker()
-    return redirect(url_for('heroku_worker_info'))
-
-@app.route('/heroku_worker/stop/')
-def stop_heroku_worker():
-    heroku_worker.stop_worker()
-    return redirect(url_for('heroku_worker_info'))
 
 @app.route('/<file_name>.zip')
 def send_zip_file(file_name):
