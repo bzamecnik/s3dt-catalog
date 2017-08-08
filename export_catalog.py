@@ -30,8 +30,8 @@ def convert_item(item):
     shoptet_item = item.get('shoptet')
     is_item_existent = shoptet_item is not None
     visible = shoptet_item['VISIBLE'] if is_item_existent else False
-    visibility = 'visible' if visible else 'hidden'
-    
+    visibility = '1' if visible else '0'
+
     if is_item_existent:
         out_item = OrderedDict([
             ('CODE', converted_item['CODE']),
@@ -90,6 +90,6 @@ if __name__ == '__main__':
     mongo = MongoClient()
     db = mongo.s3dt_catalog
     item_collection = db.items
-        
+
     with open(args.output, 'w') as output_xml_file:
         export_catalog_from_mongo(item_collection, output_xml_file)

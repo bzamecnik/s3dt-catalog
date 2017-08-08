@@ -7,11 +7,11 @@ def download_shoptet_catalog_to_mongo(mongo_uri, catalog_url):
     db = mongo.get_default_database()
     item_collection = db.items
     item_collection.create_index("code")
-    
+
     catalog_res = requests.get(catalog_url, stream=True)
     codes_csv = catalog_res.content.decode('cp1250')
     lines = codes_csv.split('\r\n')
-    
+
     # input columns: code;pairCode;name;productVisibility;
     # output columns: CODE;VISIBLE
     item_count = 0
@@ -19,10 +19,12 @@ def download_shoptet_catalog_to_mongo(mongo_uri, catalog_url):
         # product id, visibility
         if len(row) >= 3:
             item_count += 1
-            item = {'CODE': row[0], 'VISIBLE': row[3] == 'visible'}
+            # originally the value was "visible"/"hidden", then changed to 0/1
+            visible = row[3] == '1' or row[3] == 'visible'
+            item = {'CODE': row[0], 'VISIBLE': visible }
             item_collection.update(
                 {'code': item['CODE']},
                 {'$set': {'code': item['CODE'], 'shoptet': item}},
                 upsert=True)
-    
+
     return item_count
