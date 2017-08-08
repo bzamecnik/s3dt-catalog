@@ -15,13 +15,18 @@ def download_shoptet_catalog_to_mongo(mongo_uri, catalog_url):
     # input columns: code;pairCode;name;productVisibility;
     # output columns: CODE;VISIBLE
     item_count = 0
+    columns = lines[0].strip().split(';')
+    codeIndex = columns.index('code')
+    visibilityIndex = columns.index('productVisibility')
+
     for row in csv.reader(lines[1:], delimiter=';'):
-        # product id, visibility
+        # we extract product id, visibility
         if len(row) >= 3:
             item_count += 1
-            # originally the value was "visible"/"hidden", then changed to 0/1
-            visible = row[3] == '1' or row[3] == 'visible'
-            item = {'CODE': row[0], 'VISIBLE': visible }
+            item = {
+                'CODE': row[codeIndex],
+                'VISIBLE': row[visibilityIndex] == 'visible'
+            }
             item_collection.update(
                 {'code': item['CODE']},
                 {'$set': {'code': item['CODE'], 'shoptet': item}},

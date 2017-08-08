@@ -30,7 +30,7 @@ def convert_item(item):
     shoptet_item = item.get('shoptet')
     is_item_existent = shoptet_item is not None
     visible = shoptet_item['VISIBLE'] if is_item_existent else False
-    visibility = '1' if visible else '0'
+    visibility = 'visible' if visible else 'hidden'
 
     if is_item_existent:
         out_item = OrderedDict([
