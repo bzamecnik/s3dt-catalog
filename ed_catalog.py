@@ -12,7 +12,7 @@ def download_ed_catalog(catalog_url):
     print('download_ed_catalog({})', catalog_url)
     catalog_res = requests.get(catalog_url, stream=True)
     print('response: {}', catalog_res)
-    
+
     # Read the request content, zip file and XML file via a stream to prevent
     # reading the whole data into memory at once. The memory used should be
     # constant regardless of the size of the input data.
@@ -49,7 +49,7 @@ def process_catalog(input_xml, process_item):
         if [key for (key, value) in path] == expected_path:
             process_item(item)
         return True
-    
+
     xmltodict.parse(input_xml, item_depth=3, item_callback=handle_item)
 
 def is_3d_print_item(item):
@@ -81,7 +81,7 @@ def load_catalog_to_mongo(input_xml, item_collection, counter):
 
 def convert_item(item):
     '''Converts an item from ED format to Shoptet format'''
-    
+
     endUserPrice = Decimal(item['EndUserPrice'])
     vatPercent = Decimal(item['Vat']).quantize(
         Decimal('1'), rounding=ROUND_HALF_UP)
@@ -91,7 +91,7 @@ def convert_item(item):
     # purchase price without VAT
     purchasePrice = Decimal(item['YourPriceWithFees'])
     purchasePriceWithVat = add_vat(purchasePrice, vat)
-    
+
     # ED quantizes some stock amounts to ranges, eg. '10-49',
     # '50-99', '100+', also exact quantities are decimal, eg. '12,00'.
     # However, Shoptet only accepts exact integer amounts.
@@ -102,19 +102,27 @@ def convert_item(item):
     # '10-49' -> '10'
     # '100+' -> '100'
     stockItemCount = re.sub(r'([0-9]+)[,+-].*', '\\1', item['OnStockText'])
-    
+
     # Shoptet only allows EAN-13, not EAN-14. ED EAN codes might
     # have 13, 14 or even 6 digits. Longer codes are ignored.
     eanCode = item['EANCode']
     if not eanCode or len(eanCode) > 14:
-        eanCode = ''
+        # some dummy EAN code (note that checksum of 12*'0' is 0)
+        eanCode = 13 * '0'
     elif len(eanCode) == 14:
         eanCode = ean14_to_ean_13(eanCode)
+
+    def get_description(item):
+        # DESCRIPTION must not be empty, so we can fall back to NAME
+        if item['Description'] and len(item['Description']) > 0:
+            return item['Description']
+        else:
+            return item['Name']
 
     out_item = OrderedDict([
         ('NAME', item['Name']),
         # ('SHORT_DESCRIPTION', ''), # ?
-        ('DESCRIPTION', item['Description']),
+        ('DESCRIPTION', get_description(item)),
         ('MANUFACTURER', item['ProducerName']),
         ('WARRANTY', item['Warranty']),
         ('ITEM_TYPE', 'product'),
@@ -145,7 +153,7 @@ def convert_item(item):
         ('AVAILABILITY_IN_STOCK', 'Skladem' if item['OnStock'] == 'true' else 'Není skladem')
     ])
     return out_item
-    
+
 def round_price(price):
     'Round price to 2 decimal places'
     return price.quantize(Decimal('.01'), rounding=ROUND_HALF_UP)
@@ -177,7 +185,7 @@ def download_ed_catalog_to_mongo(mongo_uri, catalog_url, counter):
     db = mongo.get_default_database()
     item_collection = db.items
     item_collection.create_index('code')
-    
+
     catalog_xml = download_ed_catalog(catalog_url)
     load_catalog_to_mongo(catalog_xml, item_collection, counter)
 
@@ -187,15 +195,15 @@ class Counter(object):
         self.selected = 0
         self.report_period = report_period
         self.report = report
-    
+
     def item_visited(self):
         self.total += 1
         if self.report and self.total % self.report_period == 0:
             self.report(self)
-    
+
     def item_selected(self):
         self.selected += 1
-    
+
     def finished(self):
         self.report(self)
 
