@@ -33,6 +33,9 @@ def convert_item(item):
     visibility = 'visible' if visible else 'hidden'
 
     if is_item_existent:
+        availability = (shoptet_item['AVAILABILITY_IN_STOCK']
+                        if shoptet_item.get('AVAILABILITY_IN_STOCK') == 'Ihned k odeslání'
+                        else converted_item['AVAILABILITY_IN_STOCK'])
         out_item = OrderedDict([
             ('CODE', converted_item['CODE']),
             # price might be updated by hand and should not be overwritten
@@ -43,7 +46,7 @@ def convert_item(item):
             #('PRICE_VAT', converted_item['PRICE_VAT']),
             ('VAT', converted_item['VAT']),
             ('STOCK', converted_item['STOCK']),
-            ('AVAILABILITY_IN_STOCK', converted_item['AVAILABILITY_IN_STOCK']),
+            ('AVAILABILITY_IN_STOCK', availability),
             ('VISIBILITY', visibility)
         ])
     else:
