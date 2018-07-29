@@ -1,12 +1,14 @@
+import os
+import re
 from collections import OrderedDict
 from decimal import Decimal, ROUND_HALF_UP
-import os
-from pymongo import MongoClient
-import re
-import requests
-from werkzeug.contrib.iterio import IterIO
-import xmltodict
 from zipfile import ZipFile
+
+import requests
+import xmltodict
+from pymongo import MongoClient
+from werkzeug.contrib.iterio import IterIO
+
 
 def download_ed_catalog(catalog_url):
     print('download_ed_catalog({})', catalog_url)
@@ -24,6 +26,7 @@ def download_ed_catalog(catalog_url):
                 catalog_xml = xml_file
     return catalog_xml
 
+
 def get_ed_catalog_url(catalog_request_url, login, password):
     params = {
         'login': login,
@@ -37,6 +40,7 @@ def get_ed_catalog_url(catalog_request_url, login, password):
     catalog_url = plStatus['url']
     return catalog_url
 
+
 def process_catalog(input_xml, process_item):
     print('process_catalog()')
     '''
@@ -44,18 +48,21 @@ def process_catalog(input_xml, process_item):
     input_xml - a string or stream representing the XML
     process_item - a function to be called for each item (OrderedDict)
     '''
-    def handle_item(path, item, \
-        expected_path=['ResponseProductList', 'ProductList', 'Product']):
+
+    expected_path = ['ResponseProductList', 'ProductList', 'Product']
+
+    def handle_item(path, item):
         if [key for (key, value) in path] == expected_path:
             process_item(item)
         return True
 
     xmltodict.parse(input_xml, item_depth=3, item_callback=handle_item)
 
+
 def is_3d_print_item(item):
-    'Filters products from just a single category'
-    return item['CommodityName'] == '3D TISK' \
-        or item['CommodityCode'] == '3DP'
+    """Filters products from just a single category"""
+    return item['CommodityName'] == '3D TISK' or item['CommodityCode'] == '3DP'
+
 
 def update_item_to_mongo(ed_item, collection):
     # NOTE: upsert is much slower than insert, but we'd like to
@@ -70,17 +77,20 @@ def update_item_to_mongo(ed_item, collection):
             'shoptet_from_ed': shoptet_item}},
         upsert=True)
 
+
 def load_catalog_to_mongo(input_xml, item_collection, counter):
     def process_item(item):
         counter.item_visited()
         if is_3d_print_item(item):
             counter.item_selected()
             update_item_to_mongo(item, item_collection)
+
     process_catalog(input_xml, process_item)
     counter.finished()
 
+
 def convert_item(item):
-    '''Converts an item from ED format to Shoptet format'''
+    """Converts an item from ED format to Shoptet format"""
 
     endUserPrice = Decimal(item['EndUserPrice'])
     vatPercent = Decimal(item['Vat']).quantize(
@@ -145,40 +155,46 @@ def convert_item(item):
         # ('WEIGHT', '0'), # ?
         ('VAT', str(vatPercent)),
         ('EAN', eanCode),
-        ('CURRENCY', 'CZK'), # ?
+        ('CURRENCY', 'CZK'),  # ?
         ('STOCK', OrderedDict([
             ('AMOUNT', stockItemCount),
-            ('MINIMAL_AMOUNT', '0'), # ?
+            ('MINIMAL_AMOUNT', '0'),  # ?
         ])),
         ('AVAILABILITY_IN_STOCK', 'Skladem' if item['OnStock'] == 'true' else 'Není skladem')
     ])
     return out_item
 
+
 def round_price(price):
-    'Round price to 2 decimal places'
+    """Round price to 2 decimal places"""
     return price.quantize(Decimal('.01'), rounding=ROUND_HALF_UP)
+
 
 def add_vat(price, vat):
     return round_price(price * (Decimal('1') + vat))
 
+
 def boolean_to_integer(value):
     return '1' if value else '0'
 
+
 def ean13_checksum(code):
-    '''
+    """
     Adds the check digit to a EAN-12 code missing the check digit.
     code: 12 digit code without the check digit (string)
     returns: 13 digit code (string)
 
     It would work analogically for weights '131313131313'.
-    '''
+    """
     weights = '131313131313'
     s = sum([int(c) * int(w) for (c, w) in zip(code, weights)])
     check_digit = ((10 - s) % 10) % 10
     return code + str(check_digit)
 
+
 def ean14_to_ean_13(code):
     return ean13_checksum(code[1:-1])
+
 
 def download_ed_catalog_to_mongo(mongo_uri, catalog_url, counter):
     mongo = MongoClient(mongo_uri)
@@ -188,6 +204,7 @@ def download_ed_catalog_to_mongo(mongo_uri, catalog_url, counter):
 
     catalog_xml = download_ed_catalog(catalog_url)
     load_catalog_to_mongo(catalog_xml, item_collection, counter)
+
 
 class Counter(object):
     def __init__(self, report=None, report_period=1000):
@@ -207,14 +224,18 @@ class Counter(object):
     def finished(self):
         self.report(self)
 
+
 if __name__ == '__main__':
     def ed_catalog_url():
         # catalog_request_url = 'http://public.ws.cz.elinkx.biz/service.asmx/getProductListDownloadZIP'
         # catalog_url = get_ed_catalog_url(catalog_request_url)
         catalog_url = 'http://localhost:5000/static/priceList_1055541_UTF8_63e3bbe9-ab87-49bf-a221-b20590b106de.zip'
         return catalog_url
-    mongo_uri = os.environ.get('MONGO_URI') # localhost if not defined
+
+    mongo_uri = os.environ.get('MONGO_URI')  # localhost if not defined
+
     def counter_report(counter):
         print('total:', counter.total, ', selected:', counter.selected)
+
     counter = Counter(report=counter_report, report_period=1000)
     download_ed_catalog_to_mongo(mongo_uri, ed_catalog_url(), counter)

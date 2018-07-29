@@ -7,6 +7,7 @@ See https://devcenter.heroku.com/articles/python-rq for more information.
 '''
 
 import os
+
 import redis
 from rq import Queue, Worker, Connection
 

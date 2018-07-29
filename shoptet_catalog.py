@@ -1,6 +1,7 @@
 import csv
-from pymongo import MongoClient
+
 import requests
+from pymongo import MongoClient
 
 
 def download_shoptet_catalog_to_mongo(mongo_uri, catalog_url):

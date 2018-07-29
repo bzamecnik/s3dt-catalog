@@ -3,11 +3,13 @@ Export catalog from MongoDB to XML that can be imported to Shoptet.
 '''
 
 import argparse
-from collections import OrderedDict
 import os
+from collections import OrderedDict
+
 import pymongo
-from pymongo import MongoClient
 import xmltodict
+from pymongo import MongoClient
+
 
 def export_catalog_from_mongo(item_collection, output_xml=None):
     '''
@@ -20,10 +22,12 @@ def export_catalog_from_mongo(item_collection, output_xml=None):
         .sort('code', pymongo.ASCENDING)
     return export_catalog(items, output_xml)
 
+
 def export_catalog(items, output_file):
     shop_items = [convert_item(item) for item in items]
     catalog_dict = OrderedDict([('SHOP', OrderedDict([('SHOPITEM', shop_items)]))])
     return xmltodict.unparse(catalog_dict, output=output_file, pretty=True)
+
 
 def convert_item(item):
     converted_item = item['shoptet_from_ed']
@@ -43,7 +47,7 @@ def convert_item(item):
             # ('STANDARD_PRICE', converted_item['STANDARD_PRICE']),
             ('PURCHASE_PRICE', converted_item['PURCHASE_PRICE']),
             # the end-user price will be updated by hand, not overwritten
-            #('PRICE_VAT', converted_item['PRICE_VAT']),
+            # ('PRICE_VAT', converted_item['PRICE_VAT']),
             ('VAT', converted_item['VAT']),
             ('STOCK', converted_item['STOCK']),
             ('AVAILABILITY_IN_STOCK', availability),
@@ -74,6 +78,7 @@ def convert_item(item):
         ])
     return out_item
 
+
 def export_catalog_xml():
     mongo_uri = os.environ.get('MONGO_URI')
     mongo = MongoClient(mongo_uri)
@@ -81,11 +86,13 @@ def export_catalog_xml():
     item_collection = db.items
     return export_catalog_from_mongo(item_collection)
 
+
 def parse_args():
     parser = argparse.ArgumentParser(
         description='Export merged catalog from MongoDB to Shoptet XML.')
     parser.add_argument('output', help='Path to catalog in Shoptet XML format')
     return parser.parse_args()
+
 
 if __name__ == '__main__':
     args = parse_args()
