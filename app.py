@@ -94,11 +94,10 @@ def jobs():
         return render_template('jobs.html', jobs=jobs)
 
 
-@app.route('/<file_name>.zip')
+@app.route('/test/<file_name>')
 def send_zip_file(file_name):
-    """Send your static text file."""
-    file_dot_text = file_name + '.zip'
-    return app.send_static_file(file_dot_text)
+    """Useful for testing with locally available data."""
+    return app.send_static_file(file_name)
 
 
 if __name__ == '__main__':
