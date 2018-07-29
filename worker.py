@@ -1,10 +1,10 @@
-'''
+"""
 Runs a background Redis-based job queue worker that processes incoming jobs.
 
 It connects either to redis running at the Redis-to-go or at the localhost.
 
 See https://devcenter.heroku.com/articles/python-rq for more information.
-'''
+"""
 
 import os
 

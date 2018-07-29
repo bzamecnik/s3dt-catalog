@@ -1,6 +1,6 @@
-'''
+"""
 Export catalog from MongoDB to XML that can be imported to Shoptet.
-'''
+"""
 
 import argparse
 import os
@@ -12,12 +12,12 @@ from pymongo import MongoClient
 
 
 def export_catalog_from_mongo(item_collection, output_xml=None):
-    '''
+    """
     Exports items from ED that have been converted to Shoptet
     into and XML file.
     item_collection - MongoDB collection containing items
     output_xml - file-like where the XML will be written
-    '''
+    """
     items = item_collection.find({'shoptet_from_ed': {'$ne': None}}) \
         .sort('code', pymongo.ASCENDING)
     return export_catalog(items, output_xml)

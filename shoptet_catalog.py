@@ -28,16 +28,16 @@ def parse_catalog_csv(catalog_csv_str):
     # input columns: code;pairCode;name;productVisibility;
     # output columns: CODE;VISIBLE
     columns = lines[0].strip().split(';')
-    codeIndex = columns.index('code')
-    visibilityIndex = columns.index('productVisibility')
-    availabilityInStockIndex = columns.index('availabilityInStock')
+    code_index = columns.index('code')
+    visibility_index = columns.index('productVisibility')
+    availability_in_stock_index = columns.index('availabilityInStock')
 
     # we extract product id, visibility
     return [
         {
-            'CODE': row[codeIndex],
-            'VISIBLE': row[visibilityIndex] == 'visible',
-            'AVAILABILITY_IN_STOCK': row[availabilityInStockIndex]
+            'CODE': row[code_index],
+            'VISIBLE': row[visibility_index] == 'visible',
+            'AVAILABILITY_IN_STOCK': row[availability_in_stock_index]
         }
         for row in csv.reader(lines[1:], delimiter=';')
         if len(row) >= 4

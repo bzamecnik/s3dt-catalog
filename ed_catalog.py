@@ -36,8 +36,8 @@ def get_ed_catalog_url(catalog_request_url, login, password):
     res = requests.get(catalog_request_url, params=params)
     print(res.text)
     response_xml = xmltodict.parse(res.text)
-    plStatus = response_xml['ResponseProductListStatus']['ProductListStatus']
-    catalog_url = plStatus['url']
+    pl_status = response_xml['ResponseProductListStatus']['ProductListStatus']
+    catalog_url = pl_status['url']
     return catalog_url
 
 
@@ -92,15 +92,15 @@ def load_catalog_to_mongo(input_xml, item_collection, counter):
 def convert_item(item):
     """Converts an item from ED format to Shoptet format"""
 
-    endUserPrice = Decimal(item['EndUserPrice'])
-    vatPercent = Decimal(item['Vat']).quantize(
+    end_user_price = Decimal(item['EndUserPrice'])
+    vat_percent = Decimal(item['Vat']).quantize(
         Decimal('1'), rounding=ROUND_HALF_UP)
-    vat = Decimal('0.01') * vatPercent
-    endUserPriceWithVat = add_vat(endUserPrice, vat)
+    vat = Decimal('0.01') * vat_percent
+    end_user_price_with_vat = add_vat(end_user_price, vat)
 
     # purchase price without VAT
-    purchasePrice = Decimal(item['YourPriceWithFees'])
-    purchasePriceWithVat = add_vat(purchasePrice, vat)
+    purchase_price = Decimal(item['YourPriceWithFees'])
+    purchase_price_with_vat = add_vat(purchase_price, vat)
 
     # ED quantizes some stock amounts to ranges, eg. '10-49',
     # '50-99', '100+', also exact quantities are decimal, eg. '12,00'.
@@ -111,16 +111,16 @@ def convert_item(item):
     # '12,00' -> '12'
     # '10-49' -> '10'
     # '100+' -> '100'
-    stockItemCount = re.sub(r'([0-9]+)[,+-].*', '\\1', item['OnStockText'])
+    stock_item_count = re.sub(r'([0-9]+)[,+-].*', '\\1', item['OnStockText'])
 
     # Shoptet only allows EAN-13, not EAN-14. ED EAN codes might
     # have 13, 14 or even 6 digits. Longer codes are ignored.
-    eanCode = item['EANCode']
-    if not eanCode or len(eanCode) > 14:
+    ean_code = item['EANCode']
+    if not ean_code or len(ean_code) > 14:
         # some dummy EAN code (note that checksum of 12*'0' is 0)
-        eanCode = 13 * '0'
-    elif len(eanCode) == 14:
-        eanCode = ean14_to_ean_13(eanCode)
+        ean_code = 13 * '0'
+    elif len(ean_code) == 14:
+        ean_code = ean14_to_ean_13(ean_code)
 
     def get_description(item):
         # DESCRIPTION must not be empty, so we can fall back to NAME
@@ -148,16 +148,16 @@ def convert_item(item):
         ('CODE', item['Code']),
         ('PRICE', item['EndUserPrice']),
         # end user price in case of some discount
-        ('STANDARD_PRICE', str(endUserPriceWithVat)),
-        ('PURCHASE_PRICE', str(purchasePriceWithVat)),
-        ('PRICE_VAT', str(endUserPriceWithVat)),
+        ('STANDARD_PRICE', str(end_user_price_with_vat)),
+        ('PURCHASE_PRICE', str(purchase_price_with_vat)),
+        ('PRICE_VAT', str(end_user_price_with_vat)),
         # weight is not given in the input data
         # ('WEIGHT', '0'), # ?
-        ('VAT', str(vatPercent)),
-        ('EAN', eanCode),
+        ('VAT', str(vat_percent)),
+        ('EAN', ean_code),
         ('CURRENCY', 'CZK'),  # ?
         ('STOCK', OrderedDict([
-            ('AMOUNT', stockItemCount),
+            ('AMOUNT', stock_item_count),
             ('MINIMAL_AMOUNT', '0'),  # ?
         ])),
         ('AVAILABILITY_IN_STOCK', 'Skladem' if item['OnStock'] == 'true' else 'Není skladem')
