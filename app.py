@@ -24,6 +24,7 @@ app = Flask(__name__)
 # Make RQDashboard use the Redis-to-go service if available.
 
 app.config['REDIS_URL'] = worker.redis_url
+app.config['JOB_TIMEOUT'] = 10 * 60  # in seconds
 RQDashboard(app)
 
 redis_client = worker.redis_client
@@ -37,14 +38,14 @@ def home():
 def update_ed_catalog():
     with Connection(redis_client):
         q = Queue()
-        result = q.enqueue(tasks.update_ed_catalog)
+        result = q.enqueue(tasks.update_ed_catalog, timeout=app.config['JOB_TIMEOUT'])
         return redirect(url_for('jobs'))
 
 @app.route('/catalog/shoptet', methods=['POST'])
 def update_shoptet_catalog():
     with Connection(redis_client):
         q = Queue()
-        result = q.enqueue(tasks.update_shoptet_catalog)
+        result = q.enqueue(tasks.update_shoptet_catalog, timeout=app.config['JOB_TIMEOUT'])
         return redirect(url_for('jobs'))
 
 @app.route('/catalog')
