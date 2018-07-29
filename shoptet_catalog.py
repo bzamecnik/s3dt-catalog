@@ -29,15 +29,17 @@ def parse_catalog_csv(catalog_csv_str):
     columns = lines[0].strip().split(';')
     codeIndex = columns.index('code')
     visibilityIndex = columns.index('productVisibility')
+    availabilityInStockIndex = columns.index('availabilityInStock')
 
     # we extract product id, visibility
     return [
         {
             'CODE': row[codeIndex],
-            'VISIBLE': row[visibilityIndex] == 'visible'
+            'VISIBLE': row[visibilityIndex] == 'visible',
+            'AVAILABILITY_IN_STOCK': row[availabilityInStockIndex]
         }
         for row in csv.reader(lines[1:], delimiter=';')
-        if len(row) >= 3
+        if len(row) >= 4
     ]
 
 
