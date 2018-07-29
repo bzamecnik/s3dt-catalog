@@ -1,0 +1,2 @@
+style:
+	flake8
