@@ -1,3 +1,8 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
 <h1>S3DT - catalog</h1>
 
 <h2>Update catalog from ED System</h2>
@@ -32,3 +37,4 @@ visibility and store them to MongoDB.</p>
 	<li><a href="/jobs/">Summary of background jobs</a></li>
 	<li><a href="/rq/">Redis Queue dashboard - background job details</a></li>
 </ul>
+{% endblock %}
