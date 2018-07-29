@@ -13,6 +13,7 @@ mongo_uri = os.environ.get('MONGO_URI')
 
 def update_ed_catalog():
     job = get_current_job()
+    job.meta['name'] = 'Update from ED catalog'
 
     def set_job_progress(state):
         job.meta['progress'] = state
@@ -24,10 +25,14 @@ def update_ed_catalog():
         password = os.environ.get('ED_PASSWORD')
         set_job_progress('obtaining link to the catalog XML')
         catalog_request_url = os.environ.get('ED_CATALOG_URI')
-        set_job_progress('downloading the catalog XML')
+        job.meta['catalog_request_url'] = catalog_request_url
+        set_job_progress('processing the catalog XML')
         catalog_url = get_ed_catalog_url(catalog_request_url, login, password)
+        job.meta['catalog_url'] = catalog_url
+        print('Downloading catalog from:', catalog_url)
 
         def counter_report(counter):
+            print('ED progress: Processed: %d, selected: %d' % (counter.total, counter.selected))
             job.meta['total_items'] = counter.total
             job.meta['selected_items'] = counter.selected
             job.save()
@@ -45,9 +50,13 @@ def update_shoptet_catalog():
     with Connection(worker.redis_client):
         start = time.time()
         job = get_current_job()
+        job.meta['name'] = 'Update from Shoptet catalog'
 
         catalog_url = os.environ.get('SHOPTET_CATALOG_URI')
+        job.meta['catalog_url'] = catalog_url
+        print('Downloading Shoptet catalog from:', catalog_url)
         item_count = download_shoptet_catalog_to_mongo(mongo_uri, catalog_url)
+        print('Obtained %d items. Done.' % item_count)
 
         end = time.time()
         job.meta['elapsed_time'] = '%.3f sec' % (end - start)
