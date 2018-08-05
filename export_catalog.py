@@ -37,16 +37,6 @@ def convert_item(item):
     visibility = 'visible' if visible else 'hidden'
 
     if is_item_existent:
-        # We can overwrite availability and stock amount
-        # only if it's not ready in the eshop (which is also default).
-        should_update_stock = shoptet_item.get('AVAILABILITY_IN_STOCK') not in {None, 'Ihned k odeslání'}
-        if should_update_stock:
-            stock = converted_item['STOCK']
-            availability_in_stock = converted_item['AVAILABILITY_IN_STOCK']
-        else:
-            stock = shoptet_item['STOCK']
-            availability_in_stock = shoptet_item.get('AVAILABILITY_IN_STOCK', 'Ihned k odeslání')
-
         out_item = OrderedDict([
             ('CODE', converted_item['CODE']),
             # price might be updated by hand and should not be overwritten
@@ -56,10 +46,14 @@ def convert_item(item):
             # the end-user price will be updated by hand, not overwritten
             # ('PRICE_VAT', converted_item['PRICE_VAT']),
             ('VAT', converted_item['VAT']),
-            ('STOCK', stock),
-            ('AVAILABILITY_IN_STOCK', availability_in_stock),
             ('VISIBILITY', visibility)
         ])
+        # We can overwrite availability and stock amount
+        # only if it's not ready in the eshop (which is also default).
+        should_update_stock = shoptet_item['AVAILABILITY_IN_STOCK'] not in {'', 'Ihned k odeslání'}
+        if should_update_stock:
+            out_item['STOCK'] = converted_item['STOCK']
+            out_item['AVAILABILITY_IN_STOCK'] = converted_item['AVAILABILITY_IN_STOCK']
     else:
         out_item = OrderedDict([
             ('NAME', converted_item['NAME']),
