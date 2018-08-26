@@ -3,6 +3,9 @@ version: '3.1'
 services:
   web:
     image: s3dt-catalog
+    build:
+      context: .
+      dockerfile: Dockerfile
     command: ["gunicorn", "-b", "0.0.0.0:80", "app:app", "--log-file", "-"]
     ports: ["8002:80"]
     volumes:
