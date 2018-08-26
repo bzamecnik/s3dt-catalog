@@ -160,7 +160,7 @@ def convert_item(item):
             ('AMOUNT', stock_item_count),
             ('MINIMAL_AMOUNT', '0'),  # ?
         ])),
-        ('AVAILABILITY_IN_STOCK', 'Skladem' if item['OnStock'] == 'true' else 'Není skladem')
+        ('AVAILABILITY_IN_STOCK', 'Skladem u dodavatele' if item['OnStock'] == 'true' else 'Není skladem')
     ])
     return out_item
 
