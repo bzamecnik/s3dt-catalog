@@ -1,29 +1,29 @@
 - zobrazit nové produkty - kód a názvy produktů
-- [*] umožnit, aby šlo v Shoptetu nastavit vlastní cenu a nepřepisovat ji z ED
+- [x] umožnit, aby šlo v Shoptetu nastavit vlastní cenu a nepřepisovat ji z ED
 - upozornit na změnu nákupní ceny
 - umožnit ze vstupů (ED a shoptet) vygenerovat nejen importní XML, ale i přehled změn
 
-- hodilo by se ukládat sklad do databáze
+- [x] hodilo by se ukládat sklad do databáze
 	- buď aktuální stav, nebo celou historii
-- https://addons.heroku.com/mongolab
+- ~https://addons.heroku.com/mongolab~
 	- Sandbox - free, 496 MB storage
 
 - při stahování vstupů by byl pěkný progress bar
-- stahování dělat jako background task
+- [x] stahování dělat jako background task
 	- vložit job do fronty
 	- zobrazovat informaci o progressu - job začal, procenta hotovo, job hotov
 		- ideálně posílat server side events, jinak pollovat nebo manuální refresh
 	- po skončení dát odkaz na výsledné XML ke stažení
 
 - problémy:
-	- výpočet potřebujeme provést v background workeru mimo HTTP request
+	- [x] výpočet potřebujeme provést v background workeru mimo HTTP request
 	- potřebujeme zřetězit několik jobů
 		- stažení ED katalogu
 		- stažení Shoptet katalogu
 		- vygenerování Shoptet importu
-	- potřebujeme persistentně uložit výsledky každého jobu
+	- [x] potřebujeme persistentně uložit výsledky každého jobu
 	- chtěli bychom monitorovat progress jednotlivých jobů
-	- chtěli bychom stopnout běžící job
+	- [x] chtěli bychom stopnout běžící job
 	- ukázat report o změnách v katalogu
 
 - rozdělit konverzi ED XML:
@@ -36,7 +36,7 @@
 
 
 - info:
-	- v ED katalogu je cca 66787 položek
+	- v ED katalogu je cca ~66787~ > 180000 položek
 
 - testování monga?
 	- https://github.com/vmalloc/mongomock
@@ -49,3 +49,9 @@
 - ukládat všechny unikátní verze produktů
 	- pak z toho dělat porovnání
 - importovat komplet celý katalog ze Shoptetu
+
+---
+
+- deploynout pres Docker
+	- udelat mongo volume persistentni
+	- pro produkci nemountovat zdrojaky, pro dev ano
