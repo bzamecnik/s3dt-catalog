@@ -8,8 +8,8 @@ services:
       dockerfile: Dockerfile
     command: ["gunicorn", "-b", "0.0.0.0:80", "app:app", "--log-file", "-"]
     ports: ["8002:80"]
-    volumes:
-    - .:/opt/s3dt-catalog
+#    volumes:
+#    - .:/opt/s3dt-catalog
     environment:
     - REDIS_URL=redis://redis:6379/
     - MONGO_URI=mongodb://mongo/s3dt_catalog
@@ -21,8 +21,8 @@ services:
   worker:
     image: s3dt-catalog
     command: ["python", "-u", "worker.py"]
-    volumes:
-    - .:/opt/s3dt-catalog
+#    volumes:
+#    - .:/opt/s3dt-catalog
     environment:
     - REDIS_URL=redis://redis:6379/
     - MONGO_URI=mongodb://mongo/s3dt_catalog
@@ -38,6 +38,8 @@ services:
     image: mongo
     command: --smallfiles
     restart: always
+    volumes:
+    - /opt/s3dt-catalog/data/prod:/data/db
   redis:
     image: redis
     restart: always
